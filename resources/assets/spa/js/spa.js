@@ -16,7 +16,8 @@ window.Vue = require('vue');
 
 // import Echo from "laravel-echo"
 
-// window.Echo = new Echo({
-//     broadcaster: 'pusher',
-//     key: 'your-pusher-key'
-// });
+Vue.component('Vue', require('./components/App.vue'));
+
+const app = new Vue({
+    el: 'body'
+});

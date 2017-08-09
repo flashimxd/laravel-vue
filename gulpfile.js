@@ -30,7 +30,7 @@ gulp.task('webpack-dev-server', () => {
     new WebpackDevServer(webpack(config), {
         hot: true,
         proxy: {
-            '*' : 'http://127.0.0.1:8000' 
+            '*' : 'http://localhost:8000'
         },
         watchOptions: {
             poll: true,
@@ -53,7 +53,7 @@ elixir(mix => {
 
     mix.browserSync({
         host: '0.0.0.0',
-        proxy: 'http://127.0.0.1:8080'
+        proxy: 'http://localhost:8000'
     });
     
 });

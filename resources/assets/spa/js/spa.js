@@ -1,23 +1,16 @@
+import localStorage from './services/localStorage';
 require('materialize-css');
-
-/**
- * Vue is a modern JavaScript library for building interactive web interfaces
- * using reactive data binding and reusable components. Vue's API is clean
- * and simple, leaving you to focus on building your next great project.
- */
 
 window.Vue = require('vue');
 
-/**
- * Echo exposes an expressive API for subscribing to channels and listening
- * for events that are broadcast by Laravel. Echo and event broadcasting
- * allows your team to easily build robust real-time web applications.
- */
+require('vue-resource');
 
-// import Echo from "laravel-echo"
+Vue.http.options.root = 'http://localhost:8080/api';
 
-Vue.component('Vue', require('./components/App.vue'));
+require('./router');
 
-const app = new Vue({
-    el: 'body'
-});
+localStorage.set('nome', 'rangel netto');
+console.log(localStorage.get('nome'));
+console.log(localStorage.setObject('oloko', {id: 15, name: 'no name guy 2 ss'}));
+//console.log(localStorage.getObject('oloko'));
+

@@ -2,9 +2,17 @@
     <div class="container">
         <div class="row">
             <div class="col s8 offset-s2 z-depth-2">
-                <h3>Code Financeiro</h3>
+                <h3>Code Financeiro login</h3>
                 <form method="POST" @submit.prevent="login()">
 
+                    <div class="row" v-if="error.error">
+                        <div class="col s12">
+                            <div class="card-panel red">
+                                <span class="white-text">{{error.message}}</span>
+
+                            </div>
+                        </div>
+                    </div>
                     <div class="row">
                         <div class="input-field col s12">
                             <input id="email" type="email" class="validate" name="email" v-model="user.email" required autofocus>
@@ -21,7 +29,7 @@
 
                     <div class="row">
                         <div class="input-field col s12">
-                            <button class="btn">Login assa</button>
+                            <button class="btn">Login</button>
                         </div>
                     </div>
                 </form>
@@ -31,22 +39,36 @@
 </template>
 
 <script type="text/javascript">
-    import {Jwt} from '../services/resources';
+    import Auth from '../services/auth';
     export default {
         data(){
             return{
                 user: {
                     email: '',
                     password: ''
+                },
+                error: {
+                    error: false,
+                    message: ''
                 }
             }
         },
         methods: {
             login(){
-                console.log('loginn'); debugger;
-                Jwt.accessToken(this.user.email, this.user.password).then((response) => {
-                    console.log(response);
-                });
+                Auth.login(this.user.email, this.user.password)
+                    .then(() => this.$router.go({name: 'dashboard'}))
+                    .catch((responseError) => {
+
+                        switch(responseError.status){
+                            case 401:
+                                this.error.message = responseError.data.message;
+                            break;
+                            default:
+                                this.error.message = 'Login failed!';
+                            break;
+                        }
+                        this.error.error = true;
+                    })
             }
         }
     }

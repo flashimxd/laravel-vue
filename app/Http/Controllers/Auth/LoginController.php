@@ -5,7 +5,7 @@ namespace CodeFin\Http\Controllers\Auth;
 use CodeFin\Http\Controllers\Controller;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
 use Illuminate\Http\Request;
-use CodeFin\User;
+use CodeFin\Models\User;
 
 class LoginController extends Controller
 {

@@ -1,16 +1,12 @@
-import localStorage from './services/localStorage';
+import appConfing from './services/appConfig';
 require('materialize-css');
 
 window.Vue = require('vue');
 
 require('vue-resource');
 
-Vue.http.options.root = 'http://localhost:8080/api';
+Vue.http.options.root = appConfing.api_url;
+
+require('./services/inteceptors');
 
 require('./router');
-
-localStorage.set('nome', 'rangel netto');
-console.log(localStorage.get('nome'));
-console.log(localStorage.setObject('oloko', {id: 15, name: 'no name guy 2 ss'}));
-//console.log(localStorage.getObject('oloko'));
-

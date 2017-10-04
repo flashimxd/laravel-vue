@@ -1,19 +1,23 @@
+import JwtToken from './jwt-token';
 import Auth from './auth';
 import appConfig from './appConfig';
 
 Vue.http.interceptors.push((request, next) => {
-    request.headers.set('Authorization', Auth.getAuthorizantionHeader());
+    request.headers.set('Authorization', JwtToken.getAuthorizantionHeader());
     next();
 });
 
 Vue.http.interceptors.push((request, next) => {
     next((response) => {
         if(response.status === 401){
-            return Auth.refreshToken()
+            return JwtToken.refreshToken()
                 .then(() => {
                     return Vue.http(request);
                 })
-                .catch(() => window.location.href = appConfig.login_url);
+                .catch(() => {
+                    Auth.clearAuth();
+                    window.location.href = appConfig.login_url
+                });
         }
     })
 })

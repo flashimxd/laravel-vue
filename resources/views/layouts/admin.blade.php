@@ -27,25 +27,15 @@
                 <?php 
                     $menuConfig = [
                         'name' => Auth::user()->name,
-                        'menus' => [                                             
-                            ['name' => 'Contas a pagar',   'url' => '/teste',   'dropdownId' => 'teste'],
-                            ['name' => 'Contas a receber', 'url' => '/teste1']
+                        'menus' => [
+                            ['name' => 'Banco', 'url' => route('admin.banks.index'), 'active' => isRouteActive('admin.banks.index')]
 
                         ],
-                        'menusDropdown' => [
-                            [
-                                'id' => 'teste', 'items' =>  [
-                                    ['name' => 'Listar contas',    'url' => '/listar'],
-                                    ['name' => 'Criar contas',    'url' => '/criar']
-                                ]
-                            ]   
-                        ],
+                        'menusDropdown' => [],
                         'urlLogout' => env('URL_ADMIN_LOGOUT'),
                         'csrfToken' => csrf_token()
 
                     ];
-
-                    //dd($menuConfig);
                 ?>
                 <admin-menu :config="{{json_encode($menuConfig)}}"></admin-menu>
             @endif

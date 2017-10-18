@@ -1,17 +1,13 @@
 <template>
-    <ul :id="menuItem.id" class="dropdown-content" v-for="menuItem in config.menusDropdown">
+    <ul :id="menuItem.id" class="dropdown-content" v-for="menuItem in menusDropdown">
         <li v-for="menu in menuItem.items">
-            <a :href="menu.url">{{menu.name}}</a>
+            <a v-link="{name: menu.routeName}">{{menu.name}}</a>
         </li>
     </ul>
 
     <ul id="dropdown-logout" class="dropdown-content">
         <li>
-            <a :href="config.urlLogout" @click.prevent="logOut()">Sair</a>
-
-            <form id="logout-form" :action="config.urlLogout" method="POST" style="display: none;">
-                <input type="hidden" name="_token" :value="config.csrfToken">
-            </form>
+            <a v-link="{name: 'auth.logout'}">Sair</a>
         </li>
     </ul>
 
@@ -21,23 +17,23 @@
             <div class="nav-wrapper">
 
                 <div class="col s12">
-                    <a href="#" class="left brand-logo">Code Contas - Admin</a>
+                    <a href="#" class="left brand-logo">Code Contas - App</a>
                     <a href="#" data-activates="nav-mobile" class="button-collapse">
                         <i class="material-icons">menu</i>
                     </a>
 
                     <ul class="right hide-on-med-and-down">
                         
-                        <li v-for="menu in config.menus">
+                        <li v-for="menu in menus">
                             <a v-if="menu.dropdownId" class="dropdown-button" href="!#" :data-activates="menu.dropdownId">
                                 {{menu.name}} <i class="material-icons right">arrow_drop_down</i>
                             </a>
-                            <a v-else :href="menu.url">{{menu.name}}</a>
+                            <a v-else v-link="menu.url">{{menu.name}}</a>
                         </li>
 
                         <li>
                             <a class="dropdown-button" href="!#" data-activates="dropdown-logout">
-                                {{config.name}} <i class="material-icons right">arrow_drop_down</i>
+                                {{name}} <i class="material-icons right">arrow_drop_down</i>
                             </a>
                         </li>
 
@@ -46,7 +42,7 @@
                 </div>
 
                 <ul id="nav-mobile" class="side-nav">
-                    <li v-for="menu in config.menus">
+                    <li v-for="menu in menus">
                         <a :href="menu.url">{{menu.name}}</a>
                     </li>
                 </ul>
@@ -57,33 +53,25 @@
 </template>
 
 <script type="text/javascript">
+    import Auth from '../services/auth';
     export default {
-        props: {
-            config: {
-                type: Object,
-                default(){
-                    return{
-                        name: '',
-                        menus: [],
-                        menusDropdown: [],
-                        urlLogout: 'admin/logout'
-                    }
-                }
+        data() {
+            return {
+                menus: [
+                    {name: 'Conta bancária', routeName: 'bank-account.list'},
+                ],
+                menusDropdown: [],
+                user: Auth.user
+            }
+        },
+        computed:{
+            name(){
+                return this.user.data ? this.user.data.name : '';
             }
         },
         ready(){
             $('.button-collapse').sideNav();
             $('.dropdown-button').dropdown();
         },
-        data() {
-            return {
-               
-            }
-        },
-        methods: {
-            logOut(){
-                $('#logout-form').submit();
-            }
-        }
     };
 </script>

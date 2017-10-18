@@ -17,7 +17,7 @@ class BankRepositoryEloquent extends BaseRepository implements BankRepository
     public function create(array $attributes)
     {
         $logo = $attributes['logo'];
-        $attributes['logo'] = "semimagem.jpg";
+        $attributes['logo'] = env('BANK_LOGO_DEFAULT');
         $model = parent::create($attributes);
         $event = new BankStoredEvent($model, $logo);
         event($event);
@@ -34,7 +34,6 @@ class BankRepositoryEloquent extends BaseRepository implements BankRepository
         }
 
         $model = parent::update($attributes, $id);
-        //dd($logo);
         $event = new BankStoredEvent($model, $logo);
         event($event);
 

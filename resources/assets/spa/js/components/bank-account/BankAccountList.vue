@@ -1,0 +1,131 @@
+<template>
+    <div class="container">
+        <div class="row">
+            <div class="card-panel green lighten-3">
+                <span class="green-text text-darken-2">
+                    <h5>Minhas Contas Bancárias</h5>
+                </span>
+            </div>
+            <div class="card-panel z-depth-5">
+                <table class="bordered striped highlight responsive-table">
+                    <thead>
+                    <tr>
+                        <th v-for="(k, col) in table.headers" :width="col.width">
+                            <a href="#" @click.prevent="sortBy(k)">
+                                {{col.label}}
+                                <i class="material-icons right" v-if="order.key == k">
+                                    {{order.sort == 'asc' ? 'arrow_drop_up': 'arrow_drop_down'}}
+                                </i>
+                            </a>
+                        </th>
+                        <th>Ações</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr v-for="(idx, bank) in bankAccounts">
+                        <td>&nbsp;{{idx + 1}}</td>
+                        <td>{{bank.name}}</td>
+                        <td>{{bank.agency}}</td>
+                        <td>{{bank.account}}</td>
+                        <td>
+                            <a v-link="{name: 'bank-account.update', params: {id: bank.id}}">Editar</a> |
+                            <a href="#" @click.prevent="openModalDelete(bank)">Excluir</a>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+                <pagination :current-page.sync="pagination.current_page" :per-page="pagination.per_page" :total-records="pagination.total"></pagination>
+            </div>
+            <div class="fixed-action-btn">
+                <a class="btn-floating btn-large" href="#"><i class="large material-icons">add</i></a>
+            </div>
+        </div>
+    </div>
+    <modal :modal="modal">
+        <div slot="content" v-if="bankAccountToDelete">
+            <h4>Mensagem de confirmação</h4>
+            <p><strong>Deseja excluir essa conta bancária?</strong></p>
+            <div class="divider"></div>
+            <p>Nome: <strong>{{bankAccountToDelete.name}}</strong></p>
+            <p>Agência: <strong>{{bankAccountToDelete.agency}}</strong></p>
+            <p>C/C: <strong>{{bankAccountToDelete.account}}</strong></p>
+            <div class="divider"></div>
+        </div>
+        <div slot="footer">
+            <button class="btn btn-flat waves-effect green lighten-2  modal-close modal-action" @click="destroy()">OK</button>
+            <button class="btn btn-flat waves-effect waves-red modal-close modal-action">Cancelar</button>
+        </div>
+
+    </modal>
+</template>
+
+<script type="text/javascript">
+    import {BankAccount} from '../../services/resources';
+    import ModalComponent from '../../../../_default/components/Modal.vue';
+    import PaginationComponent from '../Pagination.vue';
+    export default {
+        components: {
+            'modal': ModalComponent,
+            'pagination': PaginationComponent
+        },
+        data(){
+            return {
+                bankAccounts: [],
+                bankAccountToDelete: null,
+                modal: {
+                    id: 'modal-delete'
+                },
+                pagination:{
+                    current_page: 0,
+                    per_page: 0,
+                    total: 0
+                },
+                order: {
+                    key: 'id',
+                    sort: 'asc'
+                },
+                table: {
+                    headers: {
+                        id: {label: '#', width: '10%'},
+                        name: {label: 'Nome', width: '45%'},
+                        agency: {label: 'Agência', width: '15%'},
+                        account: {label: 'C/C', width: '15%'},
+                    }
+                }
+            }
+        },
+        created(){
+            this.getBankAccounts();
+        },
+        methods: {
+            destroy(){
+                BankAccount.delete({id: this.bankAccountToDelete.id}).then((response) => {
+                    this.bankAccounts.$remove(this.bankAccountToDelete);
+                    this.bankAccountToDelete = null;
+                    Materialize.toast('Conta bancária excluída com sucesso!', 4000);
+                });
+            },
+            openModalDelete(bankAccount){
+                this.bankAccountToDelete = bankAccount;
+                $('#modal-delete').modal('open');
+            },
+            getBankAccounts(){
+                BankAccount.query({page: this.pagination.current_page + 1}).then((response) => {
+                    this.bankAccounts = response.data.data;
+                    let pagination    = response.data.meta.pagination;
+                    pagination.current_page--;
+                    this.pagination   = pagination;
+                });
+            },
+            sortBy(key){
+                this.order.key = key;
+                this.order.sort = this.order.sort == 'desc' ? 'asc': 'desc';
+            }
+        },
+        events:{
+            'pagination::changed'(page){
+                this.getBankAccounts();
+            }
+        }
+    }
+</script>

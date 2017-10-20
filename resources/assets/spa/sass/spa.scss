@@ -26,6 +26,18 @@ body{
     z-index: 998;
 }
 
+.filter-group{
+    .btn{
+        float: right;
+        height: 3rem;
+        line-height: 3rem;
+    }
+    .filter-wrapper{
+        overflow: hidden;
+        padding-right: 10px;
+    }
+}
+
 #app{
     display: flex;
     min-height: 100vh;

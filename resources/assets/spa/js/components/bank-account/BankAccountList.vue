@@ -1,12 +1,9 @@
 <template>
     <div class="container">
         <div class="row">
-            <div class="card-panel green lighten-3">
-                <span class="green-text text-darken-2">
-                    <h5>Minhas Contas Bancárias</h5>
-                </span>
-            </div>
+            <page-title><h5>Minhas Contas Bancárias</h5></page-title>
             <div class="card-panel z-depth-5">
+                <search @on-submit="filter()" :model.sync="search"></search>
                 <table class="bordered striped highlight responsive-table">
                     <thead>
                     <tr>
@@ -23,7 +20,7 @@
                     </thead>
                     <tbody>
                     <tr v-for="(idx, bank) in bankAccounts">
-                        <td>&nbsp;{{idx + 1}}</td>
+                        <td>&nbsp;{{bank.id}}</td>
                         <td>{{bank.name}}</td>
                         <td>{{bank.agency}}</td>
                         <td>{{bank.account}}</td>
@@ -37,7 +34,7 @@
                 <pagination :current-page.sync="pagination.current_page" :per-page="pagination.per_page" :total-records="pagination.total"></pagination>
             </div>
             <div class="fixed-action-btn">
-                <a class="btn-floating btn-large" href="#"><i class="large material-icons">add</i></a>
+                <a class="btn-floating btn-large" href="#" v-link="{name: 'bank-account.create'}"><i class="large material-icons">add</i></a>
             </div>
         </div>
     </div>
@@ -63,10 +60,14 @@
     import {BankAccount} from '../../services/resources';
     import ModalComponent from '../../../../_default/components/Modal.vue';
     import PaginationComponent from '../Pagination.vue';
+    import PageTitleComponent from '../PageTitle.vue';
+    import SearchComponent from  '../Search.vue';
     export default {
         components: {
             'modal': ModalComponent,
-            'pagination': PaginationComponent
+            'pagination': PaginationComponent,
+            'page-title': PageTitleComponent,
+            'search': SearchComponent
         },
         data(){
             return {
@@ -80,6 +81,7 @@
                     per_page: 0,
                     total: 0
                 },
+                search: "",
                 order: {
                     key: 'id',
                     sort: 'asc'
@@ -110,7 +112,12 @@
                 $('#modal-delete').modal('open');
             },
             getBankAccounts(){
-                BankAccount.query({page: this.pagination.current_page + 1}).then((response) => {
+                BankAccount.query({
+                    page: this.pagination.current_page + 1,
+                    orderBy: this.order.key,
+                    sortedBy: this.order.sort,
+                    search: this.search
+                }).then((response) => {
                     this.bankAccounts = response.data.data;
                     let pagination    = response.data.meta.pagination;
                     pagination.current_page--;
@@ -120,6 +127,11 @@
             sortBy(key){
                 this.order.key = key;
                 this.order.sort = this.order.sort == 'desc' ? 'asc': 'desc';
+                this.getBankAccounts();
+            },
+            filter(){
+                this.pagination.current_page = 0;
+                this.getBankAccounts();
             }
         },
         events:{

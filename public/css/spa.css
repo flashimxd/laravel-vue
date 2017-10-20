@@ -10706,6 +10706,17 @@ body {
   z-index: 998;
 }
 
+.filter-group .btn, .filter-group .btn-large {
+  float: right;
+  height: 3rem;
+  line-height: 3rem;
+}
+
+.filter-group .filter-wrapper {
+  overflow: hidden;
+  padding-right: 10px;
+}
+
 #app {
   display: -webkit-box;
   display: flex;

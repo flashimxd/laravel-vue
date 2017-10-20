@@ -28,6 +28,8 @@ class CreateBankDefaultLogo extends Migration
      */
     public function down()
     {
-        //
+        $name = env('BANK_LOGO_DEFAULT');
+        $path = \CodeFin\Models\Bank::logosDir().'/'.$name;
+        Storage::disk('public')->delete($path);
     }
 }

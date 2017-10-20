@@ -1,0 +1,61 @@
+<div class="container">
+    <div class="row">
+        <div class="row">
+            <div class="col s6">
+                <page-title><h5>{{title}}</h5></page-title>
+            </div>
+            <div class="col s6">
+                <page-title class="valign-wrapper">
+                    <div class="valign">
+                        <a class="waves-effect waves-light btn" v-link="{name: 'bank-account.list'}"><i class="material-icons">arrow_back</i></a>
+                    </div>
+                </page-title>
+            </div>
+        </div>
+        <div class="card-panel z-depth-5">
+            <form name="form" method="GET" @submit="submit()">
+
+                <div class="row">
+                    <div class="input-field col s12">
+                        <label class="active">Nome:</label>
+                        <input type="text" v-model="bankAccount.name" placeholder="Nome"/>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="input-field col s12">
+                        <label class="active">Banco:</label>
+                        <select v-model="bankAccount.bank_id" id="bank_id" class="browser-default">
+                            <option value="" disabled selected>Escolha um Banco</option>
+                            <option v-for="bank in banks" :value="bank.id">{{bank.name}}</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="input-field col s6">
+                        <label class="active">Agência:</label>
+                        <input type="text" v-model="bankAccount.agency" placeholder="Agência"/>
+                    </div>
+
+                    <div class="input-field col s6">
+                        <label class="active">Conta Corrente:</label>
+                        <input type="text" v-model="bankAccount.account" placeholder="Conta"/>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="input-field col s12">
+                        <input type="checkbox" class="filled-in" v-model="bankAccount.default" id="account_default"/>
+                        <label for="account_default">Padrão?</label>
+                    </div>
+                </div>
+
+                <div class="fixed-action-btn">
+                    <a class="btn-floating btn-large" href="#" @click.prevent="submit()"><i class="material-icons">save</i> </a>
+                </div>
+
+            </form>
+        </div>
+    </div>
+</div>

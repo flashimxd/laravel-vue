@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Support\Facades\Storage;
 
 class CreateBanksData extends Migration
 {
@@ -26,7 +27,17 @@ class CreateBanksData extends Migration
      */
     public function down()
     {
-        //
+        $repository = app(\CodeFin\Repositories\BankRepository::class);
+        $repository->skipPresenter(true);
+        $count = count($this->getData());
+        $data = range(1, $count);
+        $repository->skipPresenter(true);
+        foreach ($data as $id){
+            $model = $repository->find($id);
+            $path = \CodeFin\Models\Bank::LogosDir().'/'.$model->logo;
+            Storage::disk('public')->delete($path);
+            $model->delete();
+        }
     }
 
     public function getData(){

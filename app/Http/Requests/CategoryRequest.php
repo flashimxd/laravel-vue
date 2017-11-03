@@ -3,8 +3,10 @@
 namespace CodeFin\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Validation\Rule;
 
-class BankAccountCreateRequest extends FormRequest
+class CategoryRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -23,12 +25,13 @@ class BankAccountCreateRequest extends FormRequest
      */
     public function rules()
     {
+        $client = Auth::guard('api')->user()->client;
         return [
             'name' => 'required|max:255',
-            'agency' => 'required|max:255',
-            'account' => 'required|max:255',
-            'default' => 'boolean',
-            'bank_id' => 'required|exists:banks,id'
+            'parent_id' => Rule::exists('categories', 'id')
+                ->where(function($query) use($client){
+                    $query->where('client_id', $client->id);
+                })
         ];
     }
 }

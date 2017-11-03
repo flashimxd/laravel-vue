@@ -31,9 +31,24 @@ $factory->define(\CodeFin\Models\BankAccount::class, function (Faker\Generator $
         'account' => rand(70000, 260000).'-'.rand(0,9),
     ];
 });
+
 $factory->state(\CodeFin\Models\User::class, 'admin' ,function (Faker\Generator $faker) {
 
     return [
         'role' => \CodeFin\Models\User::ROLE_ADMIN
+    ];
+});
+
+$factory->define(\CodeFin\Models\Client::class ,function (Faker\Generator $faker) {
+
+    return [
+        'name' => $faker->name
+    ];
+});
+
+$factory->define(\CodeFin\Models\Category::class ,function (Faker\Generator $faker) {
+
+    return [
+        'name' => $faker->name
     ];
 });

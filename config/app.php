@@ -170,6 +170,7 @@ return [
         Barryvdh\Cors\ServiceProvider::class,
         Prettus\Repository\Providers\RepositoryServiceProvider::class,
         Collective\Html\HtmlServiceProvider::class,
+        HipsterJazzbo\Landlord\LandlordServiceProvider::class,
         /*
          * Application Service Providers...
          */
@@ -231,7 +232,8 @@ return [
         'JWTAuth' => Tymon\JWTAuth\Facades\JWTAuth::class,
         'JWTFactory' => Tymon\JWTAuth\Facades\JWTFactory::class,
         'Form' => Collective\Html\FormFacade::class,
-        'Html' => Collective\Html\HtmlFacade::class
+        'Html' => Collective\Html\HtmlFacade::class,
+        'Landlord' => \HipsterJazzbo\Landlord\LandlordServiceProvider::class
     ],
 
 ];

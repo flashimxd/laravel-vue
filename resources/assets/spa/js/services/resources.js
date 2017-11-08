@@ -17,5 +17,6 @@ export class Jwt{
 let User = Vue.resource('user');
 let BankAccount = Vue.resource('bank_accounts{/id}');
 let Bank = Vue.resource('banks');
+let Category = Vue.resource('categories{/id}');
 
-export {User, BankAccount, Bank};
+export {User, BankAccount, Bank, Category};

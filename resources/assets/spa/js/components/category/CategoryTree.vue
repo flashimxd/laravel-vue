@@ -6,8 +6,8 @@
                     <i class="material-icons">{{categoryIcon(category)}}</i>
                 </a>
                 <ul :id="dropdownId(category)" class="dropdown-content">
-                    <li><a href="#">Adicionar</a></li>
-                    <li><a href="#">Editar</a></li>
+                    <li><a href="#" @click.prevent="categoryNew(category)">Adicionar</a></li>
+                    <li><a href="#" @click.prevent="categoryEdit(category)">Editar</a></li>
                     <li><a href="#">Excluir</a></li>
                 </ul>
                 <span class="valign">{{{categoryText(category)}}}</span>
@@ -48,6 +48,12 @@
             },
             categoryIcon(category){
                 return category.children.data.length > 0 ? 'folder' : 'label';
+            },
+            categoryNew(category){
+                this.$dispatch('category-new', category);
+            },
+            categoryEdit(category){
+                this.dispatch('category-edit', category);
             }
         }
     }

@@ -14,6 +14,11 @@
                 <button class="btn btn-flat waves-effect waves-red modal-close modal-action">Cancelar</button>
             </div>
         </category-save>
+
+        <div class="fixed-action-btn">
+            <button class="btn-floating btn-large" href="#" @click="modalNew(null)"><i class="large material-icons">add</i></button>
+        </div>
+
     </div>
 
 </template>
@@ -23,6 +28,7 @@
     import CategoryTreeComponent from './CategoryTree.vue';
     import CategorySaveComponent from './CategorySave.vue';
     import {Category} from '../../services/resources';
+    import {CategoryFormat, CategoryService} from '../../services/category-nsm';
 
     export default {
         components: {
@@ -39,24 +45,26 @@
                     name: '',
                     parent_id: 0
                 },
-                title: 'Adicionar Categoria',
+                parent: null,
+                title: '',
                 modalOptionsSave: {
                     id: 'modal-category-save'
-                },
-                options: {
-                    data: [
-                        {id: 1, text: 'valor 1'},
-                        {id: 2, text: 'valor 2'},
-                        {id: 3, text: 'valor 3'}
-                    ]
-                },
-                selected: 3
+                }
             }
         },
         computed: {
             cpOptions(){
                 return {
-                    data: this.categoriesFormated
+                    data: this.categoriesFormated,
+                    templateResult(category){
+                        let margin = '&nbsp'.repeat(category.level * 6);
+                        let text   = category.hasChildren ? `<strong>${category.text}</strong>`: category.text;
+                        return `${margin}${text}`;
+                    },
+                    escapeMarkup(m){
+                        return m;
+                    }
+
                 }
             }
         },
@@ -71,20 +79,37 @@
                 });
             },
             saveCategory(){
-                console.log('save category');
+                CategoryService.new(this.categorySave, this.parent, this.categories).then(response => {
+                    Materialize.toast('Categoria adicionada com sucesso!', 4000);
+                    this.resetScope();
+                });
             },
             modalNew(category){
-                this.categorySave = category;
+                this.title = 'Nova  Categoria';
+                this.categorySave = {
+                    id: 0,
+                    name: '',
+                    parent_id: category === null ? null : category.id
+                };
+
+                this.parent = category;
                 $(`#${this.modalOptionsSave.id}`).modal('open');
             },
             modalEdit(category){
 
             },
             formatCategories(){
-                for(let category of this.categories){
-                    this.categoriesFormated.push({ id: category.id, text: category.name });
-                }
-                //this.categoriesFormated = this.categories;
+                this.categoriesFormated = CategoryFormat.getCategoriesFormatted(this.categories);
+            },
+            resetScope(){
+                this.categorySave = {
+                    id: 0,
+                    name: '',
+                    parent_id: 0
+                };
+
+                this.parent = null;
+                this.formatCategories();
             }
         },
         events: {

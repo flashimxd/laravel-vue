@@ -14,6 +14,9 @@
 //default csss
 @import "../../_default/sass/default";
 
+//custom select2 material design
+@import "../../_default/sass/select2-materialize";
+
 body{
     background-color: color('green', 'lighten-5');
 }

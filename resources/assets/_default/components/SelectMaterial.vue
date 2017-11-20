@@ -23,6 +23,8 @@
                 .on('change', function(){
                     if(parseInt(this.value, 10) !== 0) {
                         self.selected = this.value
+                    }else{
+                        self.selected = null;
                     }
                 });
 
@@ -30,7 +32,8 @@
         },
         watch: {
             'options.data'(data){
-                $(this.$el).select2(Object.assign({}, this.options, {data: data}));
+                $(this.$el).empty();
+                $(this.$el).select2(this.options);
             },
             'selected'(selected){
                 if(selected != $(this.$el).val()) {

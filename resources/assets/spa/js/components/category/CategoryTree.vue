@@ -8,11 +8,11 @@
                 <ul :id="dropdownId(category)" class="dropdown-content">
                     <li><a href="#" @click.prevent="categoryNew(category)">Adicionar</a></li>
                     <li><a href="#" @click.prevent="categoryEdit(category)">Editar</a></li>
-                    <li><a href="#">Excluir</a></li>
+                    <li><a href="#" @click.prevent="categoryDelete(category)">Excluir</a></li>
                 </ul>
                 <span class="valign">{{{categoryText(category)}}}</span>
             </div>
-            <category-tree :categories="category.children.data"></category-tree>
+            <category-tree :categories="category.children.data" :parent="category"></category-tree>
         </li>
     </ul>
 </template>
@@ -24,6 +24,13 @@
             categories: {
                 type: Array,
                 required: true
+            },
+            parent: {
+                type: Object,
+                required: false,
+                'default'(){
+                    return null;
+                }
             }
         },
         watch: {
@@ -53,7 +60,10 @@
                 this.$dispatch('category-new', category);
             },
             categoryEdit(category){
-                this.dispatch('category-edit', category);
+                this.$dispatch('category-edit', category, this.parent);
+            },
+            categoryDelete(category){
+                this.$dispatch('category-delete', category, this.parent);
             }
         }
     }

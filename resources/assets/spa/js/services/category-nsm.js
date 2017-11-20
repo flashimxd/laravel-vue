@@ -32,6 +32,15 @@ export class CategoryFormat {
 }
 
 export class CategoryService {
+
+    static save(category, parent, categories, categoryOriginal){
+            if(category.id === 0){
+                return this.new(category, parent, categories);
+            }else{
+                return this.edit(category, parent, categories, categoryOriginal);
+            }
+    }
+
     static new(category, parent, categories){
         let categoryCopy = $.extend(true, {}, category);
         if(categoryCopy.parent_id === null){
@@ -46,5 +55,103 @@ export class CategoryService {
             }
             return response;
         })
+    }
+
+    static edit(category, parent, categories, categoryOriginal){
+        let categoryCopy = $.extend(true, {}, category);
+        if(categoryCopy.parent_id === null){
+            delete categoryCopy.parent_id;
+        }
+
+        let self = this;
+        return Category.update({id: categoryCopy.id},categoryCopy).then((response) => {
+
+            let categoryUpdated = response.data.data;
+
+            if(categoryUpdated.parent_id === null){
+
+                //categoria alterada, esta sem pai, antes tinha um pai
+                if(parent){
+                    parent.children.data.$remove(categoryOriginal);
+                    categories.push(categoryUpdated);
+                    return response;
+                }
+
+            }else{
+                //categoria alterada, esta sem pai
+                if(parent){
+                    //troca categoria de pai
+                    if(parent.id != categoryUpdated.parent_id){
+                        parent.children.data.$remove(categoryOriginal);
+                        self._addChild(categoryUpdated, categories);
+                        return response;
+                    }
+                }else{
+                    //torna categoria um filho, antes era um pai
+                    categories.$remove(categoryOriginal);
+                    self._addChild(categoryUpdated, categories);
+                    return response;
+                }
+            }
+
+            //Alteração somente do nome da categoria
+            //Atualizar o nó na árvore
+            if(parent){
+
+                //busca o index do filho
+                let index = parent.children.data.findIndex(element => {
+                    return element.id == categoryUpdated.id;
+                })
+
+                //atualiza a arvore (filho) apenas no nó alterado
+                parent.children.data.$set(index, categoryUpdated);
+            }else{
+
+                //busca o index do pai (root)
+                let index = categories.findIndex(element => {
+                    return element.id == categoryUpdated.id;
+                })
+
+                //atualiza a arvore (root) apenas no nó alterado
+                categories.$set(index, categoryUpdated);
+            }
+
+            return response;
+        })
+    }
+
+    static destroy(category, parent, categories){
+        return Category.delete({id: category.id}).then(response => {
+            if(parent){
+                parent.children.data.$remove(category);
+            }else{
+                categories.$remove(category);
+            }
+
+            return response;
+        });
+    }
+
+    static _addChild(child, categories){
+        let parent = this._findParent(child.parent_id, categories);
+        parent.children.data.push(child);
+    }
+
+    static _findParent(id, categories){
+        let result = null;
+
+        for(let category of categories){
+            if(id == category.id){
+                result = category;
+                break;
+            }
+
+            result = this._findParent(id, category.children.data);
+            if(result != null){
+                break;
+            }
+        }
+
+        return result;
     }
 }

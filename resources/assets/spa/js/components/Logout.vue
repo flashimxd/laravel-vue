@@ -12,7 +12,7 @@
 </template>
 
 <script type="text/javascript">
-    import Auth from '../services/auth';
+    import store from '../store';
     export default {
         ready(){
             setTimeout(() => {
@@ -22,7 +22,7 @@
         methods: {
             logout(){
                 let gotToLogin = this.$router.go({name: 'auth.login'});
-                Auth.logout()
+                store.dispatch('logout')
                     .then(gotToLogin)
                     .catch(gotToLogin)
             }

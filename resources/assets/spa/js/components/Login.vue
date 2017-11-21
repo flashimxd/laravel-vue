@@ -39,7 +39,8 @@
 </template>
 
 <script type="text/javascript">
-    import Auth from '../services/auth';
+    //import Auth from '../services/auth';
+    import store from '../store';
     export default {
         data(){
             return{
@@ -55,7 +56,7 @@
         },
         methods: {
             login(){
-                Auth.login(this.user.email, this.user.password)
+                store.dispatch('login', this.user)
                     .then(() => this.$router.go({name: 'dashboard'}))
                     .catch((responseError) => {
 

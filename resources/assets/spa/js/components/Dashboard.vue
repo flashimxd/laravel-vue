@@ -15,9 +15,7 @@
 </template>
 
 <script>
-    import Auth from '../services/auth';
+    import store from '../store';
     export default {
-        ready(){
-        }
     }
 </script>

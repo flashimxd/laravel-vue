@@ -13,7 +13,7 @@
             </div>
         </div>
         <div class="card-panel z-depth-5">
-            <form name="form" method="GET" @submit="submit()">
+            <form name="form" method="GET" @submit.prevent="submit()">
 
                 <div class="row">
                     <div class="input-field col s12">
@@ -25,10 +25,6 @@
                 <div class="row">
                     <div class="input-field col s12">
                         <label class="active">Banco:</label>
-                        <!--<select v-model="bankAccount.bank_id" id="bank_id" class="browser-default">
-                            <option value="" disabled selected>Escolha um Banco</option>
-                            <option v-for="bank in banks" :value="bank.id">{{bank.name}}</option>
-                        </select> -->
                         <input type="text" id="bank-id" placeholder="Buscar banco" autocomplete="off" data-activates="bank-id-dropdown" data-beloworigin="true" :value="bank.name"/>
                         <ul id="bank-id-dropdown" class="dropdown-content ac-dropdown"></ul>
                     </div>

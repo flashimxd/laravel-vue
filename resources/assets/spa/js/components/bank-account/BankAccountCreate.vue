@@ -1,10 +1,9 @@
 <template src="./_form.html"></template>
 
 <script type="text/javascript">
-    import {BankAccount, Bank} from '../../services/resources';
     import PageTitleComponent from '../PageTitle.vue';
     import 'materialize-autocomplete';
-    import _ from 'lodash';
+    import store from '../../store/store';
 
     export default {
         components: {
@@ -22,23 +21,26 @@
                 },
                 bank: {
                     name: ""
-                },
-                banks: []
+                }
             }
         },
         created(){
             this.getBank();
         },
+        computed: {
+            banks(){
+                return store.state.bank.banks;
+            }
+        },
         methods: {
             submit(){
-                BankAccount.save({}, this.bankAccount).then(()=> { //olhaaa
+                store.dispatch('bankAccount/save', this.bankAccount).then(()=> {
                     Materialize.toast('Conta Bancária Criada Com Sucesso!', 4000);
                     this.$router.go({name: 'bank-account.list'});
                 })
             },
             getBank(){
-                Bank.query().then((response) => {
-                    this.banks = response.data.data;
+                store.dispatch('bank/query').then((response) => {
                     this.initAutocomplete();
                 })
             },
@@ -54,11 +56,8 @@
                             el: '#bank-id-dropdown'
                         },
                         getData(value, callback){
-                            let banks = self.filterBankByName(value);
-                            banks = banks.map((o) => {
-                                return {id: o.id, text: o.name};
-                            })
-
+                            let mapBank = store.getters['bank/mapBanks'];
+                            let banks = mapBank(value);
                             callback(value, banks);
                         },
                         onSelect(item){
@@ -66,13 +65,6 @@
                         }
                     });
                 });
-            },
-            filterBankByName(name){
-                let banks = _.filter(this.banks, (o) => {
-                    return _.includes(o.name.toLowerCase(), name.toLowerCase());
-                });
-
-                return banks;
             }
         }
     }

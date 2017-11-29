@@ -50,13 +50,13 @@
         </div>
     <!--</div>-->
     <modal :modal="modal">
-        <div slot="content" v-if="bankAccountToDelete">
+        <div slot="content" v-if="bankAccountDelete">
             <h4>Mensagem de confirmação</h4>
             <p><strong>Deseja excluir essa conta bancária?</strong></p>
             <div class="divider"></div>
-            <p>Nome: <strong>{{bankAccountToDelete.name}}</strong></p>
-            <p>Agência: <strong>{{bankAccountToDelete.agency}}</strong></p>
-            <p>C/C: <strong>{{bankAccountToDelete.account}}</strong></p>
+            <p>Nome: <strong>{{bankAccountDelete.name}}</strong></p>
+            <p>Agência: <strong>{{bankAccountDelete.agency}}</strong></p>
+            <p>C/C: <strong>{{bankAccountDelete.account}}</strong></p>
             <div class="divider"></div>
         </div>
         <div slot="footer">
@@ -68,7 +68,6 @@
 </template>
 
 <script type="text/javascript">
-    import {BankAccount} from '../../services/resources';
     import ModalComponent from '../../../../_default/components/Modal.vue';
     import PaginationComponent from '../Pagination.vue';
     import PageTitleComponent from '../PageTitle.vue';
@@ -84,7 +83,6 @@
         },
         data(){
             return {
-                bankAccountToDelete: null,
                 modal: {
                     id: 'modal-delete'
                 },
@@ -101,7 +99,7 @@
             }
         },
         created(){
-            store.dispatch('query');
+            store.dispatch('bankAccount/query');
         },
         computed:{
             bankAccounts(){
@@ -115,36 +113,33 @@
                     return store.state.bankAccount.searchOptions.search;
                 },
                 set(value){
-                    store.commit('setFilter', value);
+                    store.commit('bankAccount/setFilter', value);
                 }
+            },
+            bankAccountDelete(){
+                return store.state.bankAccount.bankAccountDelete;
             }
         },
         methods: {
             destroy(){
-                BankAccount.delete({id: this.bankAccountToDelete.id}).then((response) => {
-                    this.bankAccounts.$remove(this.bankAccountToDelete);
-                    this.bankAccountToDelete = null;
-
-                    if(this.bankAccounts.length === 0 && this.pagination.current_page > 0){
-                        this.pagination.current_page--;
-                    }
+                store.dispatch('bankAccount/delete').then((response) => {
                     Materialize.toast('Conta bancária excluída com sucesso!', 4000);
                 });
             },
             openModalDelete(bankAccount){
-                this.bankAccountToDelete = bankAccount;
+                store.commit('bankAccount/setDelete', bankAccount);
                 $('#modal-delete').modal('open');
             },
             sortBy(key){
-                store.dispatch('queryWithSortBy', key);
+                store.dispatch('bankAccount/queryWithSortBy', key);
             },
             filter(){
-                store.dispatch('queryWithFilter');
+                store.dispatch('bankAccount/queryWithFilter');
             }
         },
         events:{
             'pagination::changed'(page){
-                store.dispatch('queryWithPagination', page);
+                store.dispatch('bankAccount/queryWithPagination', page);
             }
         }
     }

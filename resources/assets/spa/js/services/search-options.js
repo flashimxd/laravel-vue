@@ -8,14 +8,7 @@ export default class {
         };
         this.search = '';
         this.order= {
-            set key(key){
-                this._key = key;
-                this.sort = this.sort == 'desc'? 'asc' : 'desc';
-            },
-            get key(){
-                return this._key;
-            },
-            _key: 'id',
+            key: 'id',
             sort: 'asc'
         };
         this.include = include;

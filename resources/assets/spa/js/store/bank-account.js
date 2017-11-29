@@ -4,10 +4,20 @@ import SearchOptions from '../services/search-options';
 const state = {
     bankAccounts:[],
     bankAccountDelete:null,
+    bankAccountSave: {
+        name: 'Minha conta',
+        agency: '',
+        account: '',
+        bank_id: '',
+        'default': false
+    },
     searchOptions: new SearchOptions('bank')
 };
 
 const mutations = {
+    updateName(state, name){
+        state.bankAccountSave.name = name;
+    },
     set(state, bankAccounts) {
         state.bankAccounts = bankAccounts;
     },
@@ -19,6 +29,9 @@ const mutations = {
     },
     setOrder(state, key){
         state.searchOptions.order.key = key;
+        let sort = state.searchOptions.order.sort;
+        state.searchOptions.order.sort = sort == 'desc'? 'asc' : 'desc';
+
     },
     setPagination(state, pagination){
       state.searchOptions.pagination = pagination;
@@ -49,9 +62,34 @@ const actions = {
     },
     queryWithFilter(context){
         context.dispatch('query');
+    },
+    'delete'(context){
+        let id = context.state.bankAccountDelete.id;
+        return BankAccount.delete({id: id}).then((response) => {
+            context.commit('delete');
+            context.commit('setDelete', null);
+
+            let bankAccounts = context.state.bankAccounts;
+            let pagination   =  context.state.searchOptions.pagination;
+            if(bankAccounts.length === 0 && pagination.current_page > 0){
+                context.commit('setCurrentPage', pagination.current_page--);
+            }
+
+            return response;
+        });
+    },
+    save(context, bankAccount){
+        return BankAccount.save({}, bankAccount).then((response)=> {
+            return response;
+        })
+    },
+    update(context, {id, bankAccount}){
+        return BankAccount.update({id: id}, bankAccount).then((response)=> {
+            return response;
+        })
     }
 }
 
-const module = {state, mutations,actions};
+const module = {namespaced: true, state, mutations,actions};
 
 export default module;

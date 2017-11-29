@@ -2,7 +2,7 @@
     <ul class="category-tree">
         <li v-for="(i, category) in categories" class="category-child">
             <div class="valign-wrapper">
-                <a :data-activates="dropdownId(category)" href="#" class="category-symbol" :class="{'green-text': category.children.data.length > 0, 'grey-text': !category.children.data.length}">
+                <a :data-activates="dropdownId(category)" href="#" class="category-symbol" :id="categorySymbolId(category)" :class="{'green-text': category.children.data.length > 0, 'grey-text': !category.children.data.length}">
                     <i class="material-icons">{{categoryIcon(category)}}</i>
                 </a>
                 <ul :id="dropdownId(category)" class="dropdown-content">
@@ -33,15 +33,13 @@
                 }
             }
         },
+        ready(){
+            this.makeDropDown();
+        },
         watch: {
             categories: {
                 handler(categories){
-                    $('.category-child > div > a').dropdown({
-                        hover: true,
-                        inDuration: 300,
-                        outDuration: 400,
-                        belowOrigin: true
-                    })
+                   this.makeDropDown();
                 },
                 deep: true
             }
@@ -49,6 +47,19 @@
         methods: {
             dropdownId(category){
                 return `category-tree-dropdown-${category.id}`;
+            },
+            categorySymbolId(category){
+                return `category-symbol-${this._uid}-${category.id}`;
+            },
+            makeDropDown(){
+                //unbind nos enventos de mouse para não sobrecareggar
+                $(`a[id^=category-symbol-${this._uid}-]`).unbind('mouseenter mouseleave');
+                $(`a[id^=category-symbol-${this._uid}-]`).dropdown({
+                    hover: true,
+                    inDuration: 300,
+                    outDuration: 400,
+                    belowOrigin: true
+                })
             },
             categoryText(category){
                 return category.children.data.length > 0 ? `<strong>${category.name}</strong>` : category.name;

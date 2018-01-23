@@ -26,6 +26,7 @@ trait CategoriesControllerTrait
      */
     public function store(CategoryRequest $request)
     {
+        //dd($request);
         $category = $this->repository->skipPresenter()->create($request->all());
         $this->repository->skipPresenter(false);
         $category = $this->repository->find($category->id);

@@ -14,6 +14,7 @@ use CodeFin\Models\CategoryRevenue;
  */
 class CategoryRevenueRepositoryEloquent extends BaseRepository implements CategoryRevenueRepository
 {
+    use CategoryRepositoryTrait;
     /**
      * Specify Model class name
      *

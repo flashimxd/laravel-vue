@@ -1,7 +1,7 @@
 import CategoryTreeComponent from '../components/category/CategoryTree.vue';
 import CategorySaveComponent from '../components/category/CategorySave.vue';
-import {CategoryFormat} from '../services/category-nsm';
 import ModalComponent from '../../../_default/components/Modal.vue';
+import store from '../store/store';
 
 export default {
     components: {
@@ -11,23 +11,18 @@ export default {
     },
     data(){
         return {
-            categories: [],
-            categoriesFormated: [],
             categorySave: {
                 id: 0,
                 name: '',
                 parent_id: 0
             },
-            category: null,
-            parent: null,
-            categoryDelete: null,
             title: ''
         }
     },
     computed: {
         cpOptions(){
             return {
-                data: this.categoriesFormated,
+                data: this.categoriesFormatted,
                 templateResult(category){
                     let margin = '&nbsp'.repeat(category.level * 6);
                     let text   = category.hasChildren ? `<strong>${category.text}</strong>`: category.text;
@@ -39,6 +34,15 @@ export default {
 
             }
         },
+        categories(){
+            return store.state[this.namespace()].categories;
+        },
+        categoriesFormatted(){
+            return store.getters[`${this.namespace()}/categoriesFormatted`];
+        },
+        categoryDelete(){
+            return store.state[this.namespace()].category;
+        },
         modalOptionsSave(){
             return {id: `modal-category-save-${this._uid}`};
         },
@@ -47,23 +51,22 @@ export default {
         },
     },
     created(){
-        this.getCategories();
+        store.dispatch(`${this.namespace()}/query`);
     },
     methods: {
-        getCategories(){
-            this.resource().query().then((response) => {
-                this.categories = response.data.data;
-                this.formatCategories();
-            });
-        },
         saveCategory(){
-            this.resource().save(this.categorySave, this.parent, this.categories, this.category).then(response => {
+            store.dispatch(`${this.namespace()}/save`, this.categorySave).then(response => {
                 if(this.categorySave.id === 0) {
                     Materialize.toast('Categoria adicionada com sucesso!', 4000);
                 }else{
                     Materialize.toast('Categoria alterada com sucesso!', 4000);
                 }
                 this.resetScope();
+            });
+        },
+        destroy(){
+            store.dispatch(`${this.namespace()}/delete`).then(response => {
+                Materialize.toast('Categoria excluída com sucesso!', 4000);
             });
         },
         modalNew(category){
@@ -73,8 +76,7 @@ export default {
                 name: '',
                 parent_id: category === null ? null : category.id
             };
-
-            this.parent = category;
+            store.commit(`${this.namespace()}/setParent`, category);
             $(`#${this.modalOptionsSave.id}`).modal('open');
         },
         modalEdit(category, parent){
@@ -85,25 +87,14 @@ export default {
                 parent_id: category.parent_id
             };
 
-            this.parent = parent;
-            this.category = category;
-
+            store.commit(`${this.namespace()}/setParent`, parent);
+            store.commit(`${this.namespace()}/setCategory`, category);
             $(`#${this.modalOptionsSave.id}`).modal('open');
         },
         modalDelete(category, parent){
-            this.categoryDelete = category;
-            this.parent = parent;
-
+            store.commit(`${this.namespace()}/setCategory`, category);
+            store.commit(`${this.namespace()}/setParent`, parent);
             $(`#${this.modalOptionsDelete.id}`).modal('open');
-        },
-        formatCategories(){
-            this.categoriesFormated = CategoryFormat.getCategoriesFormatted(this.categories);
-        },
-        destroy(){
-            this.resource().destroy(this.categoryDelete, this.parent, this.categories).then(response => {
-                Materialize.toast('Categoria excluída com sucesso!', 4000);
-                this.resetScope();
-            });
         },
         resetScope(){
             this.categorySave = {
@@ -111,11 +102,6 @@ export default {
                 name: '',
                 parent_id: 0
             };
-
-            this.categoryDelete = null;
-            this.parent = null;
-            this.category = null;
-            this.formatCategories();
         }
     },
     events: {

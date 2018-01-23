@@ -27,7 +27,7 @@ class CategoryRequest extends FormRequest
      */
     public function rules()
     {
-        $client = Auth::guard('api')->user()->client;
+        $client = \Auth::guard('api')->user()->client;
         return [
             'name' => 'required|max:255',
             'parent_id' => Rule::exists($this->getTable(), 'id')

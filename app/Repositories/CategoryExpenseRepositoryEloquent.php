@@ -14,6 +14,7 @@ use CodeFin\Models\CategoryExpense;
  */
 class CategoryExpenseRepositoryEloquent extends BaseRepository implements CategoryExpenseRepository
 {
+    use CategoryRepositoryTrait;
     /**
      * Specify Model class name
      *

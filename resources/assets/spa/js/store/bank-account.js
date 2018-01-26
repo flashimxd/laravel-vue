@@ -1,8 +1,10 @@
 import {BankAccount} from '../services/resources';
 import SearchOptions from '../services/search-options';
+import _ from 'lodash';
 
 const state = {
     bankAccounts:[],
+    list: [],
     bankAccountDelete:null,
     bankAccountSave: {
         name: 'Minha conta',
@@ -23,6 +25,9 @@ const mutations = {
     },
     setDelete(state, bankAccount){
         state.bankAccountDelete = bankAccount;
+    },
+    setList(state, list){
+        state.list = list;
     },
     'delete'(state){
         state.bankAccounts.$remove(state.bankAccountDelete);
@@ -45,6 +50,11 @@ const mutations = {
 };
 
 const actions = {
+    list(context){
+        return BankAccount.list().then((response) => {
+            context.commit('setList', response.data);
+        });
+    },
     query(context){
         let searchOptions = context.state.searchOptions;
         return BankAccount.query(searchOptions.createOptions()).then((response) => {
@@ -90,6 +100,23 @@ const actions = {
     }
 }
 
-const module = {namespaced: true, state, mutations,actions};
+const getters = {
+
+    filterBankAccountByName: (state) => (name) => {
+        let bankAccounts = _.filter(state.list, (o) => {
+            return _.includes(o.name.toLowerCase(), name.toLowerCase());
+        });
+
+        return bankAccounts;
+    },
+    mapBankAccounts: (state, getters) => (name) => {
+        let bankAccounts = getters.filterBankAccountByName(name);
+        return bankAccounts.map((o) => {
+            return {id: o.id, text: `${o.name} - ${o.account}`};
+        });
+    }
+}
+
+const module = {namespaced: true, state, mutations,actions, getters};
 
 export default module;

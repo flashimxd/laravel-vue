@@ -1,24 +1,81 @@
 import PageTitleComponent from '../components/PageTitle.vue';
 import ModalComponent from '../../../_default/components/Modal.vue';
+import SelectMaterialComponent from '../../../_default/components/SelectMaterial.vue';
 import store from '../store/store';
 
 export default {
     components: {
         'page-title': PageTitleComponent,
-        'modal': ModalComponent
+        'modal': ModalComponent,
+        'select-material': SelectMaterialComponent
     },
     props:{
-        index:{ type: Number, require: false, 'default': -1},
-        modalOptions: { type: Object, require: true}
+        index:{ type: Number, required: false, 'default': -1},
+        modalOptions: { type: Object, required: true}
     },
     data(){
         return {
-            bill: { id: 0, date_due: '', name: '', value: '', done: false}
+            bill: { id: 0, date_due: '', name: '', value: '', done: false, bank_account_id: 0, category_id: 0}
+        }
+    },
+    computed:{
+        cpOptions(){
+            return {
+                data: this.categoriesFormatted,
+                templateResult(category){
+                    let margin = '&nbsp'.repeat(category.level * 6);
+                    let text   = category.hasChildren ? `<strong>${category.text}</strong>`: category.text;
+                    return `${margin}${text}`;
+                },
+                escapeMarkup(m){
+                    return m;
+                }
+
+            }
+        },
+        bankAccouunts(){
+            return store.state.bankAccount.list;
+        },
+        categoriesFormatted(){
+            return store.getters[`${this.categoryNamespace()}/categoriesFormatted`];
+        }
+    },
+    watch:{
+        bankAccouunts(bankAccounts){
+            if(bankAccounts.length > 0){
+                this.initAutocomplete();
+            }
         }
     },
     methods: {
         doneId(){
             return `done-${this._uid}`;
+        },
+        bankAccountTextId(){
+            return `bank-account-text-${this._uid}`;
+        },
+        bankAccountDropdownId(){
+            return `bank-account-dropdown-${this._uid}`;
+        },
+        initAutocomplete(){
+            let self = this;
+            $(`#${this.bankAccountTextId()}`).materialize_autocomplete({
+                limit: 10,
+                multiple: {
+                    enable: false
+                },
+                dropdown: {
+                    el: `#${this.bankAccountDropdownId()}`
+                },
+                getData(value, callback){
+                    let mapBankAccounts = store.getters['bankAccount/mapBankAccounts'];
+                    let banksAccounts = mapBankAccounts(value);
+                    callback(value, banksAccounts);
+                },
+                onSelect(item){
+                    self.bill.bank_account_id = item.id;
+                }
+            });
         },
         submit(){
             if(this.bill.id !== 0){
@@ -34,7 +91,7 @@ export default {
             }
         },
         resetScope(){
-            this.bill = {id: 0, date_due: '', name: '', value: '', done: false}
+            this.bill = {id: 0, date_due: '', name: '', value: '', done: false, bank_account_id: 0, category_id: 0}
         }
     }
 }

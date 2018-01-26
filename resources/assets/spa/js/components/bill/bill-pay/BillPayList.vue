@@ -122,6 +122,8 @@
         },
         created(){
             store.dispatch('billPay/query');
+            store.dispatch('bankAccount/list');
+            store.dispatch('categoryExpense/query');
         },
         methods: {
             destroy(){
@@ -130,6 +132,7 @@
                 })
             },
             openModalCreate(){
+                console.log('create');
                 $('#modal-create').modal('open');
             },
             openModalEdit(index){

@@ -20,9 +20,6 @@ const actions = {
 }
 
 const getters = {
-    banksLength(state){
-        return state.banks.length;
-    },
     mapBanks: (state, getters) => (name) => {
         let banks = getters.filterBankByName(name);
         return banks = banks.map((o) => {

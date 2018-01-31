@@ -1,5 +1,4 @@
 import appConfing from './services/appConfig';
-//import Vuex from 'vuex';
 require('materialize-css');
 
 window.Vue = require('vue');
@@ -9,6 +8,7 @@ require('vuex');
 
 Vue.http.options.root = appConfing.api_url;
 
+require('./filters');
+require('./validators');
 require('./services/inteceptors');
-
 require('./router');

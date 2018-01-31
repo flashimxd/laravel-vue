@@ -1,5 +1,5 @@
 <div>
-    <form name="form" method="POST" @submit.prevent="submit">
+    <form :id="formId()" name="form" method="POST" @submit.prevent="submit">
         <modal :modal="modalOptions">
             <div slot="content">
                 <page-title>
@@ -7,35 +7,36 @@
                 </page-title>
                 <div class="row">
                     <div class="input-field col s12">
-                        <label class="active">Conta Bancária:</label>
-                        <input type="text" :id="bankAccountTextId()" placeholder="Procure a conta bancária" autocomplete="off" :data-activates="bankAccountDropdownId()" data-beloworigin="true"/>
+                        <input type="text" :id="bankAccountTextId()" placeholder="Procure a conta bancária" autocomplete="off" :data-activates="bankAccountDropdownId()" data-beloworigin="true" @blur="blurBankAccount"/>
+                        <input type="hidden" name="bank_account_id" :id="bankAccountHiddenId()" :value="bill.bank_account_id" v-validate data-vv-rules="required">
+                        <label class="active" :data-error="errors.first('bank_account_id')">Conta Bancária:</label>
                         <ul :id="bankAccountDropdownId()" class="dropdown-content ac-dropdown"></ul>
                     </div>
                 </div>
 
                 <div class="row">
                     <div class="input-field col s12">
-                        <select-material :options="cpOptions" :selected.sync="bill.category_id"></select-material>
-                        <label class="active">Categoria de despesa</label>
+                        <select-material name="category_id" :options="cpOptions" :selected.sync="bill.category_id" v-validate data-vv-rules="required" data-vv-name="category_id"></select-material>
+                        <label class="active" :data-error="errors.first('category_id')" data-vv-as="categoria">Categoria de despesa</label>
                     </div>
                 </div>
 
                 <div class="row">
                     <div class="input-field col s6">
-                        <label class="active">Vencimento</label>
-                        <input type="text" v-model="bill.date_due" placeholder="Informe uma data"/>
+                        <input type="text" name="date_due" id="date_due" class="validate" v-model="bill.date_due | dateFormat" placeholder="Informe uma data" v-validate data-vv-rules="required|date_format_custom" :class="{'invalid': errors.has('date_due')}" data-vv-as="data"/>
+                        <label class="active" :data-error="errors.first('date_due')">Vencimento</label>
                     </div>
 
                     <div class="input-field col s6">
-                        <label class="active">Valor</label>
-                        <input type="text" v-model="bill.value" placeholder=""/>
+                        <input type="text" id="value" name="value" class="validate" v-model="bill.value | numberFormat" placeholder="" v-validate data-vv-rules="required|number_format:0.01" :class="{'invalid': errors.has('value')}" data-vv-as="valor"/>
+                        <label class="active" :data-error="errors.first('value')">Valor</label>
                     </div>
 
                 </div>
                 <div class="row">
                     <div class="input-field col s6">
-                        <label class="active">Nome</label>
-                        <input type="text" v-model="bill.name" id="name" placeholder=""/>
+                        <input type="text" v-model="bill.name" id="name" name="name" class="validate" placeholder="" v-validate data-vv-rules="required" :class="{'invalid': errors.has('name')}" data-vv-as="nome"/>
+                        <label class="active" :data-error="errors.first('name')">Nome</label>
                     </div>
 
                     <div class="input-field col s6">

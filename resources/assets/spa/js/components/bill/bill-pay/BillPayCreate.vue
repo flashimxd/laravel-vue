@@ -4,6 +4,9 @@
     import billPayMixin from '../../../mixins/bill-mixin';
 
     export default {
+        ready(){
+            this.initSelect2();
+        },
         mixins: [billPayMixin],
         methods: {
             namespace(){

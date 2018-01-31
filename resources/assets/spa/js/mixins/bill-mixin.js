@@ -15,7 +15,8 @@ export default {
     },
     data(){
         return {
-            bill: { id: 0, date_due: '', name: '', value: '', done: false, bank_account_id: 0, category_id: 0}
+            bill: { id: 0, date_due: '', name: '', value: 0, done: false, bank_account_id: 0, category_id: 0},
+            bankAccount: {name: '', text: ''}
         }
     },
     computed:{
@@ -57,12 +58,49 @@ export default {
         bankAccountDropdownId(){
             return `bank-account-dropdown-${this._uid}`;
         },
+        bankAccountHiddenId(){
+            return `bank-account-hidden-${this._uid}`;
+        },
+        formId(){
+            return `form-bill-${this._uid}`;
+        },
+        blurBankAccount($event){
+            let el = $(event.target);
+            let text = this.bankAccount.text;
+            if(el.val() != text){
+                el.val(text);
+            }
+        },
+        validateCategory(){
+            let valid = this.$validator.validate('category_id', this.bill.category_id);
+            let parent = $(`#${this.formId()}`).find('[name="category_id"]').parent();
+            let label = parent.find('label');
+            let spanSelect2 = parent.find('.select2-selection.select2-selection--single');
+
+            if(valid){
+                label.removeClass('label-error');
+                spanSelect2.removeClass('select2-invalid');
+            }else{
+                label.removeClass('label-error').addClass('label-error');
+                spanSelect2.removeClass('select2-invalid').addClass('select2-invalid');
+            }
+        },
+        initSelect2(){
+            let select = $(`#${this.formId()}`).find('[name="category_id"]');
+            let self = this;
+            select.on('select2:close', () => {
+                self.validateCategory();
+            });
+        },
         initAutocomplete(){
             let self = this;
             $(`#${this.bankAccountTextId()}`).materialize_autocomplete({
                 limit: 10,
                 multiple: {
                     enable: false
+                },
+                hidden: {
+                    el: `#${this.bankAccountHiddenId()}`
                 },
                 dropdown: {
                     el: `#${this.bankAccountDropdownId()}`
@@ -74,6 +112,7 @@ export default {
                 },
                 onSelect(item){
                     self.bill.bank_account_id = item.id;
+                    self.bankAccount.text = item.text;
                 }
             });
         },
@@ -91,7 +130,7 @@ export default {
             }
         },
         resetScope(){
-            this.bill = {id: 0, date_due: '', name: '', value: '', done: false, bank_account_id: 0, category_id: 0}
+            this.bill = {id: 0, date_due: '', name: '', value: 0, done: false, bank_account_id: 0, category_id: 0}
         }
     }
 }

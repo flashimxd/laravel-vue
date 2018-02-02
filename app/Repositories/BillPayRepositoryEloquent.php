@@ -15,6 +15,13 @@ use CodeFin\Models\BillPay;
  */
 class BillPayRepositoryEloquent extends BaseRepository implements BillPayRepository
 {
+    use BillRepositoryTrait;
+
+    public function create(array $attributes){
+        $model = parent::create($attributes);
+        $this->repeatBill($attributes);
+        return $model;
+    }
     /**
      * Specify Model class name
      *

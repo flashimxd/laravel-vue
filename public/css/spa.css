@@ -11484,4 +11484,8 @@ main {
   box-shadow: 0 1px 0 0 #F44336;
 }
 
+.ac-appender {
+  display: none;
+}
+
 /*# sourceMappingURL=spa.css.map */

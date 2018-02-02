@@ -1,11 +1,10 @@
-import PageTitleComponent from '../components/PageTitle.vue';
 import ModalComponent from '../../../_default/components/Modal.vue';
 import SelectMaterialComponent from '../../../_default/components/SelectMaterial.vue';
 import store from '../store/store';
+import BillPay from '../models/bill-pay';
 
 export default {
     components: {
-        'page-title': PageTitleComponent,
         'modal': ModalComponent,
         'select-material': SelectMaterialComponent
     },
@@ -15,8 +14,8 @@ export default {
     },
     data(){
         return {
-            bill: { id: 0, date_due: '', name: '', value: 0, done: false, bank_account_id: 0, category_id: 0},
-            bankAccount: {name: '', text: ''}
+            bill: new BillPay(),
+            bankAccount: {name: '', text: ''},
         }
     },
     computed:{
@@ -64,11 +63,21 @@ export default {
         formId(){
             return `form-bill-${this._uid}`;
         },
+        repeatId(){
+            return `repeat-${this._uid}`;
+        },
         blurBankAccount($event){
             let el = $(event.target);
             let text = this.bankAccount.text;
             if(el.val() != text){
                 el.val(text);
+            }
+            this.validateBankAccount();
+        },
+        blurRepeatNumber($event){
+            let el = $(event.target);
+            if(parseInt(el.val()) < 0){
+                el.val(0);
             }
         },
         validateCategory(){
@@ -84,6 +93,9 @@ export default {
                 label.removeClass('label-error').addClass('label-error');
                 spanSelect2.removeClass('select2-invalid').addClass('select2-invalid');
             }
+        },
+        validateBankAccount(){
+            this.$validator.validate('bank_account_id', this.bill.bank_account_id);
         },
         initSelect2(){
             let select = $(`#${this.formId()}`).find('[name="category_id"]');
@@ -113,24 +125,35 @@ export default {
                 onSelect(item){
                     self.bill.bank_account_id = item.id;
                     self.bankAccount.text = item.text;
+                    self.validateBankAccount();
+                }
+            });
+
+            $(`#${this.bankAccountTextId()}`).parent().find('label').insertAfter(`#${this.bankAccountTextId()}`);
+        },
+        submit(){
+            let self = this;
+            this.validateCategory();
+            this.$validator.validateAll().then(success => {
+                if(success){
+                    if(self.bill.id !== 0){
+                        store.dispatch(`${self.namespace()}/edit`,{bill: self.bill, index:self.index}).then(() => {
+                            $(`#${this.modalOptions.id}`).modal('close');
+                            Materialize.toast("Conta atualizada com sucesso!", 4000);
+                            self.resetScope();
+                        });
+                    }else{
+                        store.dispatch(`${self.namespace()}/save`, self.bill).then(()=>{
+                            $(`#${this.modalOptions.id}`).modal('close');
+                            Materialize.toast("Conta adicionada com sucesso!", 4000);
+                            self.resetScope();
+                        });
+                    }
                 }
             });
         },
-        submit(){
-            if(this.bill.id !== 0){
-                store.dispatch(`${this.namespace()}/edit`,{bill: this.bill, index:this.index}).then(() => {
-                    Materialize.toast("Conta atualizada com sucesso!", 4000);
-                    this.resetScope();
-                });
-            }else{
-                store.dispatch(`${this.namespace()}/save`, this.bill).then(()=>{
-                   Materialize.toast("Conta adicionada com sucesso!", 4000);
-                   this.resetScope();
-                });
-            }
-        },
         resetScope(){
-            this.bill = {id: 0, date_due: '', name: '', value: 0, done: false, bank_account_id: 0, category_id: 0}
+            this.bill.init();
         }
     }
 }

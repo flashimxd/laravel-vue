@@ -91,3 +91,7 @@ main {
     border-bottom: $input-invalid-border !important;
     box-shadow: 0 1px 0 0 $input-error-color;
   }
+
+  .ac-appender{
+      display: none;
+  }

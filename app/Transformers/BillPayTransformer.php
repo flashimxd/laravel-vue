@@ -11,6 +11,7 @@ use CodeFin\Models\BillPay;
  */
 class BillPayTransformer extends TransformerAbstract
 {
+    protected $availableIncludes = ['category', 'bankAccount'];
 
     /**
      * Transform the \BillPayPresenter entity
@@ -27,8 +28,22 @@ class BillPayTransformer extends TransformerAbstract
             'value'      => (float)$model->value,
             'done'       => (boolean)$model->done,
             'client_id'  => $model->client_id,
+            'category_id'=> (int)$model->category_id,
+            'bank_account_id'=> (int)$model->bank_account_id,
             'created_at' => $model->created_at,
             'updated_at' => $model->updated_at
         ];
+    }
+
+    public function includeCategory(BillPay $model)
+    {
+        $transform = new CategoryTransformer();
+        $transform->setDefaultIncludes([]);
+        return $this->item($model->category, $transform);
+    }
+
+    public function includeBankAccount(BillPay $model)
+    {
+        return $this->item($model->bankAccount, new BankAccountTransformer());
     }
 }

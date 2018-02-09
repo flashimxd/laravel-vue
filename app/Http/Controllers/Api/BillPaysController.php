@@ -8,6 +8,8 @@ use Illuminate\Http\Request;
 
 use CodeFin\Http\Requests;
 use CodeFin\Http\Requests\BillPayRequest;
+use CodeFin\Criteria\FindBetweenDateBrCriteria;
+use CodeFin\Criteria\FindByValueBrCriteria;
 
 class BillPaysController extends Controller
 {
@@ -28,8 +30,11 @@ class BillPaysController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
+        $searchParam = config('repository.criteria.params.search');
+        $search = $request->get($searchParam);
+        $this->repository->pushCriteria(new FindBetweenDateBrCriteria($search))->pushCriteria(new FindByValueBrCriteria($search));
         return $this->repository->paginate(3);
     }
 

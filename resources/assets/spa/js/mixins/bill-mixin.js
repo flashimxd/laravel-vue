@@ -15,7 +15,7 @@ export default {
     data(){
         return {
             bill: new BillPay(),
-            bankAccount: {name: '', text: ''},
+            bankAccount: {text: ''},
         }
     },
     computed:{
@@ -132,28 +132,31 @@ export default {
             $(`#${this.bankAccountTextId()}`).parent().find('label').insertAfter(`#${this.bankAccountTextId()}`);
         },
         submit(){
-            let self = this;
             this.validateCategory();
             this.$validator.validateAll().then(success => {
                 if(success){
-                    if(self.bill.id !== 0){
-                        store.dispatch(`${self.namespace()}/edit`,{bill: self.bill, index:self.index}).then(() => {
-                            $(`#${this.modalOptions.id}`).modal('close');
-                            Materialize.toast("Conta atualizada com sucesso!", 4000);
-                            self.resetScope();
+                    if(this.bill.id !== 0){
+                        store.dispatch(`${this.namespace()}/edit`,{bill: this.bill, index:this.index}).then(() => {
+                            this.sucessSave("Conta atualizada com sucesso!");
                         });
                     }else{
-                        store.dispatch(`${self.namespace()}/save`, self.bill).then(()=>{
-                            $(`#${this.modalOptions.id}`).modal('close');
-                            Materialize.toast("Conta adicionada com sucesso!", 4000);
-                            self.resetScope();
+                        store.dispatch(`${this.namespace()}/save`, this.bill).then(()=>{
+                            this.sucessSave("Conta adicionada com sucesso!");
                         });
                     }
                 }
             });
         },
+        sucessSave(msg){
+            $(`#${this.modalOptions.id}`).modal('close');
+            Materialize.toast(msg, 4000);
+            this.resetScope();
+        },
         resetScope(){
             this.bill.init();
+            this.fields.reset();
+            this.errors.clear();
+            this.bankAccount = { text: '' };
         }
     }
 }

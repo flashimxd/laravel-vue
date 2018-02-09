@@ -21,4 +21,12 @@ class BillPay extends Model implements Transformable, BillRepeatTypeInterface
         'bank_account_id',
         'category_id'
     ];
+
+    public function bankAccount(){
+        return $this->belongsTo(BankAccount::class);
+    }
+
+    public function category(){
+        return $this->belongsTo(CategoryExpense::class);
+    }
 }

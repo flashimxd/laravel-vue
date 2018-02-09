@@ -6,6 +6,7 @@
     export default {
         ready(){
             this.initSelect2();
+            $('.datepicker').pickadate({format: 'dd/mm/yyyy', selectMounths: true, selectYears: 15})
         },
         mixins: [billPayMixin],
         methods: {

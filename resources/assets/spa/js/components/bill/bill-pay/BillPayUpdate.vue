@@ -4,9 +4,10 @@
     import billPayMixin from '../../../mixins/bill-mixin';
     import store from '../../../store/store';
     import BillPay from '../../../models/bill-pay';
+    import validatorOffRemoveMixin from '../../../mixins/validator-off-remove-mixin';
     
     export default {
-        mixins: [billPayMixin],
+        mixins: [billPayMixin, validatorOffRemoveMixin],
         created(){
             let self = this;
             this.modalOptions.options={};

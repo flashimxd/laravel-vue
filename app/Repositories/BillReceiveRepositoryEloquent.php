@@ -2,22 +2,19 @@
 
 namespace CodeFin\Repositories;
 
-use CodeFin\Presenters\BillPayPresenter;
 use Prettus\Repository\Eloquent\BaseRepository;
 use Prettus\Repository\Criteria\RequestCriteria;
-use CodeFin\Repositories\BillPayRepository;
-use CodeFin\Models\BillPay;
+use CodeFin\Repositories\BillReceiveRepository;
+use CodeFin\Models\BillReceive;
+use CodeFin\Presenters\BillReceivePresenter;
 
 /**
- * Class BillPayRepositoryEloquent
+ * Class BillReceiveRepositoryEloquent
  * @package namespace CodeFin\Repositories;
  */
-class BillPayRepositoryEloquent extends BaseRepository implements BillPayRepository
+class BillReceiveRepositoryEloquent extends BaseRepository implements BillReceiveRepository
 {
     use BillRepositoryTrait;
-
-    protected $fieldSearchable = ['name' => 'like'];
-
     /**
      * Specify Model class name
      *
@@ -25,7 +22,7 @@ class BillPayRepositoryEloquent extends BaseRepository implements BillPayReposit
      */
     public function model()
     {
-        return BillPay::class;
+        return BillReceive::class;
     }
 
     
@@ -40,6 +37,6 @@ class BillPayRepositoryEloquent extends BaseRepository implements BillPayReposit
 
     public function presenter()
     {
-        return BillPayPresenter::class;
+        return BillReceivePresenter::class;
     }
 }

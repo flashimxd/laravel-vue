@@ -2,14 +2,15 @@
 
 namespace CodeFin\Models;
 
-use HipsterJazzbo\Landlord\BelongsToTenants;
 use Illuminate\Database\Eloquent\Model;
 use Prettus\Repository\Contracts\Transformable;
 use Prettus\Repository\Traits\TransformableTrait;
+use HipsterJazzbo\Landlord\BelongsToTenants;
 
-class BillPay extends Model implements Transformable, BillRepeatTypeInterface
+class BillReceive extends Model implements Transformable
 {
     use TransformableTrait;
+
     use BelongsToTenants;
     use BillTrait;
     
@@ -32,10 +33,11 @@ class BillPay extends Model implements Transformable, BillRepeatTypeInterface
     }
 
     public function category(){
-        return $this->belongsTo(CategoryExpense::class);
+        return $this->belongsTo(CategoryRevenue::class);
     }
 
     public function statements(){
         return $this->morphMany(Statement::class, 'statementable');
     }
+
 }

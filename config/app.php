@@ -233,7 +233,7 @@ return [
         'JWTFactory' => Tymon\JWTAuth\Facades\JWTFactory::class,
         'Form' => Collective\Html\FormFacade::class,
         'Html' => Collective\Html\HtmlFacade::class,
-        'Landlord' => \HipsterJazzbo\Landlord\LandlordServiceProvider::class
+        'Landlord' => HipsterJazzbo\Landlord\Facades\Landlord::class
     ],
 
 ];

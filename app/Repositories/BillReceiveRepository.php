@@ -5,10 +5,10 @@ namespace CodeFin\Repositories;
 use Prettus\Repository\Contracts\RepositoryInterface;
 
 /**
- * Interface BankAccountRepository
+ * Interface BillReceiveRepository
  * @package namespace CodeFin\Repositories;
  */
-interface BankAccountRepository extends RepositoryInterface
+interface BillReceiveRepository extends RepositoryInterface
 {
-    public function addBalance($id, $value);
+    //
 }

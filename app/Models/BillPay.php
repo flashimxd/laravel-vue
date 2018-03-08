@@ -1,5 +1,4 @@
 <?php
-
 namespace CodeFin\Models;
 
 use HipsterJazzbo\Landlord\BelongsToTenants;

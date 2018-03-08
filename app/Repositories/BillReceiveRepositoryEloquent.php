@@ -15,6 +15,9 @@ use CodeFin\Presenters\BillReceivePresenter;
 class BillReceiveRepositoryEloquent extends BaseRepository implements BillReceiveRepository
 {
     use BillRepositoryTrait;
+
+    protected $fieldSearchable = ['name' => 'like'];
+    
     /**
      * Specify Model class name
      *

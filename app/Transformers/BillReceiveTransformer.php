@@ -37,6 +37,9 @@ class BillReceiveTransformer extends TransformerAbstract
 
     public function includeCategory(BillReceive $model)
     {
+        if(!$model->category){
+            return null;
+        }
         //var_dump($model->category); exit;
         $transform = new CategoryTransformer();
         $transform->setDefaultIncludes([]);

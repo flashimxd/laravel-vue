@@ -28,7 +28,7 @@
             getBill(){
                 this.resetScope();
                 let bill = store.getters[`${this.namespace()}/billByIndex`](this.index)
-                this.bill = new BillPay(bill);
+                this.bill = new BillReceive(bill);
                 let text = store.getters['bankAccount/textAutoComplete'](bill.bankAccount.data);
                 this.bankAccount.text = text;
             }
